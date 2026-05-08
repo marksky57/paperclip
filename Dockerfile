@@ -75,7 +75,7 @@ ENV NODE_ENV=production \
   PAPERCLIP_DEPLOYMENT_EXPOSURE=private \
   OPENCODE_ALLOW_ALL_MODELS=true
 
-VOLUME ["/paperclip"]
+# VOLUME ["/paperclip"]   # Disabled for Railway — Railway rejects Dockerfile VOLUME. Use Railway Volumes (mount path /paperclip) for persistence.
 EXPOSE 3100
 
 ENTRYPOINT ["docker-entrypoint.sh"]

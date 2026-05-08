@@ -66,8 +66,18 @@ export async function bootstrapCeoInvite(opts: {
     return;
   }
 
-  if (config.server.deploymentMode !== "authenticated") {
-    p.log.info("Deployment mode is local_trusted. Bootstrap CEO invite is only required for authenticated mode.");
+  // Honor PAPERCLIP_DEPLOYMENT_MODE env override so a stale file config
+  // (e.g. left over from a `--yes` quickstart on Railway/Docker) doesn't block
+  // authenticated-mode bootstrap when the runtime is clearly authenticated.
+  const effectiveDeploymentMode =
+    process.env.PAPERCLIP_DEPLOYMENT_MODE === "authenticated" ||
+    process.env.PAPERCLIP_DEPLOYMENT_MODE === "local_trusted"
+      ? process.env.PAPERCLIP_DEPLOYMENT_MODE
+      : config.server.deploymentMode;
+  if (effectiveDeploymentMode !== "authenticated") {
+    p.log.info(
+      `Deployment mode is ${effectiveDeploymentMode}. Bootstrap CEO invite is only required for authenticated mode.`,
+    );
     return;
   }
 

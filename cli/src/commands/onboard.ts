@@ -459,8 +459,12 @@ export async function onboard(opts: OnboardOptions): Promise<void> {
   if (tc) trackInstallStarted(tc);
 
   let llm: PaperclipConfig["llm"] | undefined;
+  // --yes forces local_trusted/loopback by default for safe local installs.
+  // Skip that override when PAPERCLIP_DEPLOYMENT_MODE=authenticated (e.g. Railway/Docker
+  // production deployments) so the env-driven defaults (public URL, lan bind, etc.) win.
+  const envForcesAuthenticated = process.env.PAPERCLIP_DEPLOYMENT_MODE === "authenticated";
   const { defaults: derivedDefaults, usedEnvKeys, ignoredEnvKeys } = quickstartDefaultsFromEnv({
-    preferTrustedLocal: opts.yes === true && !opts.bind,
+    preferTrustedLocal: opts.yes === true && !opts.bind && !envForcesAuthenticated,
   });
   let {
     database,
